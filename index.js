@@ -63,21 +63,36 @@ class File{
         btns.className = 'btns';
 
         const input = createInput('file', 'file', 'file')
-        btns.append(input);
+        input.onchange = () => {
+            const imgClass = document.querySelector('.file');
+            var preview = document.querySelector('img');
+            var file    = document.querySelector('input[type=file]').files[0];
+            console.log(file)
+            var reader  = new FileReader();
 
+            reader.onloadend = function () {
+                preview.src = reader.result;
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = "";
+            }
+        }
+        btns.append(input);
         const form = document.createElement('form');
         form.setAttribute('method', 'get');
-
-
         const downloadResBtn = createButton('downloadResBtn', 'submit', 'download Img', 'download');
-
         form.append(downloadResBtn);
+
         btns.append(form);
 
-        const img = document.createElement('img');
-        img.src = '1.jpg';
-        img.setAttribute('alt', 'broken')
         file.append(btns)
+        const img = document.createElement('img')
+        img.src = 'https://bipbap.ru/wp-content/uploads/2018/06/3c980dd2e9c909ada7377cc89885231b.jpg';
+        img.setAttribute('alt', 'broken');
+
         file.append(img);
         parent.append(file);
     }
