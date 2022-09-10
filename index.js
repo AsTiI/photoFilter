@@ -12,9 +12,6 @@ function createInputControl(id, type, name, min, max){
     input.setAttribute('name', name);
     input.setAttribute('min', min ?? 'none');
     input.setAttribute('max', max ?? 'none');
-    input.onclick = () => {
-
-    }
     return input;
 
 }
@@ -24,25 +21,51 @@ class Controls{
         controls.className = 'controls';
 
         controls.append(createLabel('blur', 'blur'));
-        controls.append(createInputControl('blur', 'range', 'blur', '10', '200'));
+        const blur = createInputControl('blur', 'range', 'blur', '0', '25')
+        blur.onchange = () => {
+            const myImg = document.querySelector('.myImg')
+
+            let styles = myImg.style.filter.split(' ');
+            for(let i = 0; i < styles.length; i++){
+                if (/^blur/.test(styles[i]))
+                    styles[i] = `blur(${blur.value}px)`;
+            }
+            myImg.style.filter = styles.join(' ');
+            console.log(myImg)
+
+        }
+        controls.append(blur);
+
         controls.append(createLabel('hue', 'hue'));
-        controls.append(createInputControl('hue', 'range', 'hue', '10', '200'));
+        const hue = createInputControl('hue', 'range', 'hue', '0', '200')
+        hue.onchange = () => {
+            const myImg = document.querySelector('.myImg');
+            let styles = myImg.style.filter.split(' ');
+            for(let i = 0; i < styles.length; i++){
+                if(/^hue-rotate/.test(styles[i]))
+                    styles[i] = `hue-rotate(${hue.value}deg)`;
+            }
+            myImg.style.filter = styles.join(' ');
+        }
+        controls.append(hue);
+
         controls.append(createLabel('contrast', 'contrast'));
-        controls.append(createInputControl('contrast', 'range', 'contrast', '10', '200'));
+
+        const contrast = createInputControl('contrast', 'range', 'contrast', '10', '200')
+        contrast.onchange = () => {
+            const myImg = document.querySelector('.myImg')
+            let styles = myImg.style.filter.split(' ');
+            for(let i = 0; i < styles.length; i++){
+                if (/^contrast/.test(styles[i]))
+                    styles[i] = `contrast(${contrast.value}%)`;
+            }
+            myImg.style.filter = styles.join(' ');
+
+        }
+        controls.append(contrast);
 
         parent.append(controls)
     }
-}
-
-
-
-function createButton(className, type, name, value){
-    const button = document.createElement('button');
-    button.className = className;
-    button.setAttribute('type', type);
-    button.textContent = name
-    button.setAttribute('value', value);
-    return button;
 }
 
 function createInput(id, type, name){
@@ -64,34 +87,43 @@ class File{
 
         const input = createInput('file', 'file', 'file')
         input.onchange = () => {
-            const imgClass = document.querySelector('.file');
-            var preview = document.querySelector('img');
-            var file    = document.querySelector('input[type=file]').files[0];
-            console.log(file)
-            var reader  = new FileReader();
+            let preview = document.querySelector('img');
+            let downloadImg =
+            preview.className = 'myImg'
 
-            reader.onloadend = function () {
+            let file = document.querySelector('input[type=file]').files[0];
+            let reader = new FileReader();
+
+            reader.onloadend =  () => {
+                let downloadImg = document.querySelector('.downloadImg')
                 preview.src = reader.result;
+                downloadImg.href = preview.src;
             }
-
             if (file) {
                 reader.readAsDataURL(file);
             } else {
-                preview.src = "";
+                preview.src = "https://bipbap.ru/wp-content/uploads/2018/06/3c980dd2e9c909ada7377cc89885231b.jpg";
             }
         }
         btns.append(input);
-        const form = document.createElement('form');
-        form.setAttribute('method', 'get');
-        const downloadResBtn = createButton('downloadResBtn', 'submit', 'download Img', 'download');
-        form.append(downloadResBtn);
 
-        btns.append(form);
+        const downloadImg = document.createElement('a');
+        downloadImg.setAttribute('href', 'https://bipbap.ru/wp-content/uploads/2018/06/3c980dd2e9c909ada7377cc89885231b.jpg')
+        downloadImg.setAttribute('download', '')
+        downloadImg.textContent = 'download img'
+        downloadImg.className = 'downloadImg'
+        downloadImg.onclick = () => {
+            let styles = document.querySelector('.myImg');
+        }
+
+        btns.append(downloadImg);
 
         file.append(btns)
         const img = document.createElement('img')
         img.src = 'https://bipbap.ru/wp-content/uploads/2018/06/3c980dd2e9c909ada7377cc89885231b.jpg';
         img.setAttribute('alt', 'broken');
+        img.className = 'myImg';
+        img.style.filter = 'blur(0px) hue-rotate(0deg) contrast(100%)'
 
         file.append(img);
         parent.append(file);
