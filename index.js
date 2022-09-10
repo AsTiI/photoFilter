@@ -5,13 +5,14 @@ function createLabel(name, text){
     label.textContent = text;
     return label;
 }
-function createInputControl(id, type, name, min, max){
+function createInputControl(id, type, name, min, max, value){
     const input = document.createElement('input');
     input.setAttribute('id', id);
     input.setAttribute('type', type);
     input.setAttribute('name', name);
     input.setAttribute('min', min ?? 'none');
     input.setAttribute('max', max ?? 'none');
+    input.setAttribute('value', value ?? '0');
     return input;
 
 }
@@ -21,7 +22,7 @@ class Controls{
         controls.className = 'controls';
 
         controls.append(createLabel('blur', 'blur'));
-        const blur = createInputControl('blur', 'range', 'blur', '0', '25')
+        const blur = createInputControl('blur', 'range', 'blur', '0', '25','0')
         blur.onchange = () => {
             const myImg = document.querySelector('.myImg')
 
@@ -37,7 +38,7 @@ class Controls{
         controls.append(blur);
 
         controls.append(createLabel('hue', 'hue'));
-        const hue = createInputControl('hue', 'range', 'hue', '0', '200')
+        const hue = createInputControl('hue', 'range', 'hue', '0', '200','0')
         hue.onchange = () => {
             const myImg = document.querySelector('.myImg');
             let styles = myImg.style.filter.split(' ');
@@ -51,7 +52,7 @@ class Controls{
 
         controls.append(createLabel('contrast', 'contrast'));
 
-        const contrast = createInputControl('contrast', 'range', 'contrast', '10', '200')
+        const contrast = createInputControl('contrast', 'range', 'contrast', '10', '200','100')
         contrast.onchange = () => {
             const myImg = document.querySelector('.myImg')
             let styles = myImg.style.filter.split(' ');
@@ -64,7 +65,22 @@ class Controls{
         }
         controls.append(contrast);
 
-        parent.append(controls)
+        const resetBtn = document.createElement('button');
+        resetBtn.className = 'resetBtn';
+        resetBtn.textContent = 'Reset';
+        resetBtn.onclick = () => {
+            let img = document.querySelector('.myImg');
+            let contrast = document.getElementById('contrast');
+            contrast.value = '100';
+            let hue = document.getElementById('hue');
+            hue.value = '0';
+            let blur = document.getElementById('blur');
+            blur.value = '0';
+
+            img.style.filter = 'blur(0px) hue-rotate(0deg) contrast(100%)';
+        }
+        controls.append(resetBtn);
+        parent.append(controls);
     }
 }
 

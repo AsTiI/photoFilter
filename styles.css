@@ -8,6 +8,9 @@
     height: 50px;
 }
 
+.myImg{
+    width: 500px;
+}
 body{
     display: flex;
     justify-content: center;
