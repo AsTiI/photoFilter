@@ -3,44 +3,15 @@
     padding: 0;
     box-sizing: border-box;
 }
-.openImgBtn, .downloadResBtn{
-    width: 100px;
-    height: 50px;
-}
 
-.myImg{
-    width: 500px;
-}
 body{
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0 20px;
-
 }
-.controls{
+.filters{
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 10px;
-}
-.file{
-    display: flex;
-    flex-direction: column;
-    gap: 20px 0;
-}
-.btns {
-    display: flex;
-    justify-content: center;
-    gap: 50px 0;
-}
-a{
-
-    text-decoration: none;
-    color: black;
-}
-
-.downloadImg{
-    padding: 10px 25px;
-    border: 1px solid black;
+    gap: 5px 0;
 }
