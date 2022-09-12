@@ -9,16 +9,16 @@ const filters = [
             }
         }
     },
-    {
-        brightness: {
-            name: 'brightness',
-            value: {
-                default: '0.4',
-                min: '0',
-                max: '1'
-            }
-        }
-    },
+    // {
+    //     brightness: {
+    //         name: 'brightness',
+    //         value: {
+    //             default: '0.4',
+    //             min: '0',
+    //             max: '1'
+    //         }
+    //     }
+    // },
     {
         contrast: {
             name: 'contrast',
@@ -57,16 +57,16 @@ const filters = [
     //         value: '75%'
     //     }
     // },
-    {
-        opacity: {
-            name: 'opacity',
-            value: {
-                default: '0%',
-                min: '0%',
-                max: '100%'
-            }
-        }
-    },
+    // {
+    //     opacity: {
+    //         name: 'opacity',
+    //         value: {
+    //             default: '0%',
+    //             min: '0%',
+    //             max: '100%'
+    //         }
+    //     }
+    // },
     // {
     //     saturate: {
     //         name: 'saturate',
@@ -246,11 +246,25 @@ function createElements(parent){
     const div = document.createElement('div');
     parent.append(div);
     div.className = 'filters';
-    filters.forEach((item, i, arr)=>{
 
+    filters.forEach((item, i, arr) => {
         div.append(new Filter(item, parent).node);
     })
-    parent.append(new Image('https://bipbap.ru/wp-content/uploads/2018/06/3c980dd2e9c909ada7377cc89885231b.jpg').node);
+    const img = new Image('https://bipbap.ru/wp-content/uploads/2018/06/3c980dd2e9c909ada7377cc89885231b.jpg').node;
+
+    parent.append(img);
+    for (let i = 0; i < div.children.length; i++) {
+        div.children[i].childNodes[1].onchange = () => {
+            let imgStyle = img.children[1].style.filter.split(' ');
+            for(let i = 0; i < imgStyle.length; i++){
+                const regex = new RegExp(`\^${div.children[i].childNodes[1].name}`);
+                if (regex.test(imgStyle[i])){
+                    imgStyle[i] = `${div.children[i].childNodes[1].name}(${div.children[i].childNodes[1].value}%)`;
+                }
+            }
+            img.children[1].style.filter = imgStyle.join(' ');
+        }
+    }
 }
 createElements(document.body)
 
