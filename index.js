@@ -2,63 +2,83 @@ const filters = [
     {
         blur: {
             name: 'blur',
-            value: '5px'
+            value: {
+                default: '5px',
+                min: '0px',
+                max: '25px'
+            }
         }
     },
     {
         brightness: {
             name: 'brightness',
-            value: '0.4'
+            value: {
+                default: '0.4',
+                min: '0',
+                max: '1'
+            }
         }
     },
     {
         contrast: {
             name: 'contrast',
-            value: '200%'
+            value: {
+                default: '100%',
+                min: '10%',
+                max: '200%'
+            }
         }
     },
-    {
-        dropShadow: {
-            name: 'drop-shadow',
-            value: '16px 16px 20px blue'
-        }
-    },
-    {
-        grayscale: {
-            name: 'grayscale',
-            value: '50%'
-        }
-    },
+    // {
+    //     dropShadow: {
+    //         name: 'drop-shadow',
+    //         value: '16px 16px 20px blue'
+    //     }
+    // },
+    // {
+    //     grayscale: {
+    //         name: 'grayscale',
+    //         value: '50%'
+    //     }
+    // },
     {
         hueRotate: {
             name: 'hue-rotate',
-            value: '90deg'
+            value: {
+                default: '0deg',
+                min: '0deg',
+                max: '360deg'
+            }
         }
     },
-    {
-        invert: {
-            name: 'invert',
-            value: '75%'
-        }
-    },
+    // {
+    //     invert: {
+    //         name: 'invert',
+    //         value: '75%'
+    //     }
+    // },
     {
         opacity: {
             name: 'opacity',
-            value: '25%'
+            value: {
+                default: '0%',
+                min: '0%',
+                max: '100%'
+            }
         }
     },
-    {
-        saturate: {
-            name: 'saturate',
-            value: '30%'
-        }
-    },
-    {
-        sepia: {
-            name: 'sepia',
-            value: '60%'
-        }
-    }
+    // {
+    //     saturate: {
+    //         name: 'saturate',
+    //         value: '30%'
+    //     }
+    // },
+    // {
+    //     sepia: {
+    //         name: 'sepia',
+    //         value: '60%'
+    //     }
+    // }
 ];
 
 class Filter{
@@ -69,18 +89,25 @@ class Filter{
     constructor(item){
         let filterId = '';
         let filterName = '';
-        let filterValue = '';
+        let filterValueDefault = '';
+        let filterValueMin = '';
+        let filterValueMax = '';
         for (let key in item) {
             filterId = key.toString();
             filterName = item[key].name;
-            filterValue = item[key].value;
+            for (let keyValue in item[key]){
+                filterValueDefault = item[key][keyValue].default;
+                filterValueMin = item[key][keyValue].min;
+                filterValueMax = item[key][keyValue].max;
+            }
+
         }
         const filterDiv = document.createElement('div');
         this.node = filterDiv;
 
         filterDiv.className = filterId + ' filterItem';
 
-        const input = this.createInputControl(filterId, 'range', filterName, '0', '200',filterValue);
+        const input = this.createInputControl(filterId, 'range', filterName, filterValueMin, filterValueMax, filterValueDefault);
         input.onchange = () => {
 
         }
@@ -99,14 +126,14 @@ class Filter{
      * @param {String} value
      * @returns {HTMLInputElement}
      */
-    createInputControl(id, type, name, min, max, value){
+    createInputControl(id, type, name, min, max, defaultValue){
         const input = document.createElement('input');
         input.setAttribute('id', id);
         input.setAttribute('type', type);
         input.setAttribute('name', name);
         input.setAttribute('min', min);
         input.setAttribute('max', max);
-        input.setAttribute('value', value);
+        input.setAttribute('value', defaultValue);
         return input;
     }
 
