@@ -3,9 +3,10 @@ const filters = [
         blur: {
             name: 'blur',
             value: {
-                default: '5px',
-                min: '0px',
-                max: '25px'
+                default: '0',
+                min: '0',
+                max: '25',
+                units: 'px'
             }
         }
     },
@@ -23,9 +24,10 @@ const filters = [
         contrast: {
             name: 'contrast',
             value: {
-                default: '100%',
-                min: '10%',
-                max: '200%'
+                default: '100',
+                min: '10',
+                max: '200',
+                units: '%'
             }
         }
     },
@@ -45,9 +47,10 @@ const filters = [
         hueRotate: {
             name: 'hue-rotate',
             value: {
-                default: '0deg',
-                min: '0deg',
-                max: '360deg'
+                default: '0',
+                min: '0',
+                max: '360',
+                units: 'deg'
             }
         }
     },
@@ -92,29 +95,47 @@ class Filter{
         let filterValueDefault = '';
         let filterValueMin = '';
         let filterValueMax = '';
+        let filterValueUnit = '';
         for (let key in item) {
             filterId = key.toString();
             filterName = item[key].name;
             for (let keyValue in item[key]){
+
                 filterValueDefault = item[key][keyValue].default;
                 filterValueMin = item[key][keyValue].min;
                 filterValueMax = item[key][keyValue].max;
+                filterValueUnit = item[key][keyValue].units;
+
             }
 
         }
+
+        this.filterUnit = filterValueUnit;
+
         const filterDiv = document.createElement('div');
+
         this.node = filterDiv;
 
         filterDiv.className = filterId + ' filterItem';
 
         const input = this.createInputControl(filterId, 'range', filterName, filterValueMin, filterValueMax, filterValueDefault);
-        input.onchange = () => {
-
-        }
+        this.newFilter = input;
         const label = this.createLabel(filterId, filterId);
+        this.newLabel = label;
         filterDiv.append(label);
         filterDiv.append(input);
+
     }
+    getLabel(){
+        return this.newLabel;
+    }
+    getFilter(){
+        return this.newFilter;
+    }
+    getFilterUnit(){
+        return this.filterUnit
+    }
+
 
     /**
      *
@@ -152,22 +173,33 @@ class Filter{
 }
 
 class Image{
-    constructor(src) {
-        this.src = src;
+    constructor(filters) {
+
+        let imageName = [];
+        let imageValueDefault = [];
+        let imageValueUnit = [];
+        for(let i = 0; i < filters.length; i++){
+            for (let key in filters[i]) {
+                imageName.push(filters[i][key].name)
+                imageValueDefault.push(filters[i][key].value.default)
+                imageValueUnit.push(filters[i][key].value.units)
+            }
+        }
+
+        this.src = 'https://bipbap.ru/wp-content/uploads/2018/06/3c980dd2e9c909ada7377cc89885231b.jpg';
         const divImg = document.createElement('div');
-        this.node = divImg;
-
-        divImg.className = 'imgBlock'
-        this.img = this.createImg(this.src);
-        divImg.append(this.img);
-
+        this.template = divImg;
+        divImg.className = 'imgBlock';
+        const newImg = this.createImg(this.src, imageName, imageValueDefault, imageValueUnit);
+        this.img = newImg;
+        divImg.append(newImg);
         const divBtn = document.createElement('div');
         divBtn.className = 'imageBtns';
         divImg.prepend(divBtn);
 
         const inputUploadImg = this.createInput('file', 'file', 'file');
         inputUploadImg.onchange = () => {
-            let preview = this.img;
+            let preview = newImg;
             let file = inputUploadImg.files[0];
             console.log(file)
             let reader = new FileReader(file);
@@ -189,6 +221,13 @@ class Image{
         divBtn.append(downloadBtn);
     }
 
+    getImg(){
+        return this.img;
+    }
+    getTemplate(){
+        return this.template;
+    }
+
     /**
      *
      * @param {String} id
@@ -207,14 +246,21 @@ class Image{
     /**
      *
      * @param {String} src
+     * @param {Array} imageName
+     * @param {Array} imageValueDefault
+     * @param {Array} imageValueUnit
      * @returns {HTMLImageElement}
      */
-    createImg(src){
+    createImg(src, imageName, imageValueDefault, imageValueUnit){
         const newImg = document.createElement('img');
         newImg.src = src;
         newImg.setAttribute('alt', 'broken');
         newImg.className = 'myImg';
-        newImg.style.filter = 'blur(0px) hue-rotate(0deg) contrast(100%)';
+        let styles = []
+        for(let i = 0; i < imageName.length; i++){
+            styles.push(`${imageName[i]}(${imageValueDefault[i]}${imageValueUnit[i]})`);
+        }
+        newImg.style.filter = styles.join(' ');
 
         return newImg;
     }
@@ -247,22 +293,34 @@ function createElements(parent){
     parent.append(div);
     div.className = 'filters';
 
+    const filter = [];
     filters.forEach((item, i, arr) => {
-        div.append(new Filter(item, parent).node);
-    })
-    const img = new Image('https://bipbap.ru/wp-content/uploads/2018/06/3c980dd2e9c909ada7377cc89885231b.jpg').node;
+        const newFilter = new Filter(item);
+        filter.push(newFilter);
+        filter.push(newFilter);
+    });
 
-    parent.append(img);
-    for (let i = 0; i < div.children.length; i++) {
-        div.children[i].childNodes[1].onchange = () => {
-            let imgStyle = img.children[1].style.filter.split(' ');
-            for(let i = 0; i < imgStyle.length; i++){
-                const regex = new RegExp(`\^${div.children[i].childNodes[1].name}`);
-                if (regex.test(imgStyle[i])){
-                    imgStyle[i] = `${div.children[i].childNodes[1].name}(${div.children[i].childNodes[1].value}%)`;
+    for(let i = 0; i < filter.length; i++){
+        div.append(filter[i].getLabel());
+        div.append(filter[i].getFilter());
+    }
+    const img = new Image(filters);
+    parent.append(img.getTemplate());
+    for (let i = 1; i < filter.length; i+=2) {
+        filter[i].getFilter().onchange = () => {
+
+            let imgStyle = img.getImg().style.filter.split(' ');
+            for(let j = 0; j < imgStyle.length; j++){
+                const regex = new RegExp(`\^${filter[i].getFilter().name}`);
+                console.log(filter[i].getFilter().name)
+
+                if (regex.test(imgStyle[j])){
+                    imgStyle[j] = `${filter[i].getFilter().name}(${filter[i].getFilter().value}${filter[i].getFilterUnit()})`;
+                    console.log(imgStyle[j])
+                    console.log('новые стили: ' + imgStyle[j])
                 }
             }
-            img.children[1].style.filter = imgStyle.join(' ');
+            img.getImg().style.filter = imgStyle.join(' ');
         }
     }
 }
